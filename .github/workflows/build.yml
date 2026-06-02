@@ -1,0 +1,35 @@
+name: Build Flutter APK
+
+on:
+  push:
+    branches: [ main, master ] # This tells the robot to run whenever you update your code
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Tells GitHub to use a Linux virtual machine
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17' # Android apps need Java to compile
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Download App Dependencies
+        run: flutter pub get
+
+      - name: Build the APK
+        run: flutter build apk --release
+
+      - name: Save APK to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-billing-app-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
